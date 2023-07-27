@@ -1,0 +1,192 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+nav {
+    background-color: #333;
+    padding: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+}
+
+nav h2 {
+    color: white;
+    margin-left: 10px;
+}
+
+.hamburger {
+    font-size: 30px;
+    background: none;
+    border: none;
+    color: white;
+}
+
+.menu {
+    transition: max-height 0.3s;
+    max-height: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+}
+
+form input[type="number"],
+form input[type="text"],
+form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+form input[type="submit"] {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+form input[type="submit"]:hover {
+    background-color: #449d44;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+th {
+    background-color: #f5f5f5;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 18px;
+    }
+    
+    .container {
+        padding: 10px;
+        width: 90%;
+        margin: 0 auto;
+    }
+    
+    form {
+        padding: 10px;
+    }
+    
+    form input[type="number"],
+    form input[type="text"],
+    form select {
+        padding: 15px;
+        font-size: 16px;
+    }
+    
+    form input[type="submit"] {
+        padding: 15px 30px;
+        font-size: 16px;
+    }
+    
+    table, th, td {
+        padding: 15px;
+        font-size: 16px;
+    }
+
+    .hamburger {
+        display: block;
+    }
+    
+    .menu {
+        position: absolute;
+        left: 0;
+        top: 60px;
+        width: 100%;
+        background-color: #333;
+        padding-left: 60px; /* added padding */
+    }
+    
+    .menu.show {
+        max-height: none;
+    }
+
+    /* Hide the table on small screens */
+    table {
+        display: none;
+    }
+
+    /* Style the cards */
+    .card {
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: white;
+    }
+
+    .card > div {
+        margin-bottom: 10px;
+    }
+  
+    .form-group {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .form-group label, 
+    .form-group input[type="date"] {
+        margin-right: 10px;
+    }
+
+    .date-link {
+        text-decoration: none;  /* Remove underline */
+        color: #666666;  /* Change link color */
+    }
+    
+    .date-link:hover {
+        color: #4d4d4d;  /* Change link color on hover */
+    }
+  
+    #proteinTypesChart {
+        height: 500px; /* Adjust this to your preference */
+    }
+
+}

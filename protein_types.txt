@@ -1,0 +1,1 @@
+["Eier-Speise", "Forelle ger\u00e4uchert", "H\u00fchnerbrust", "Lachsfilet", "Protein-Bar", "Protein-Guglhupf", "Protein-Shake", "Rinderfilet", "Thuna+Eier", "Wasa Kn\u00e4cke", "Yoghurt+H\u00fcttenk\u00e4se"]

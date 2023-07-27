@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Protein - Export</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    {% include 'nav.html' %}
+    <div class="container">
+        <h1>Protein-Export</h1>
+        <form method="POST">
+            <label for="start_date">Zeitraum (alles wenn leer): </label><br>
+            <label for="start_date">Von: </label>
+            <input type="date" id="start_date" name="start_date"><br>
+            <label for="end_date">Bis: </label>
+            <input type="date" id="end_date" name="end_date"><br>
+            <label for="delimiter">Delimiter: </label>
+            <input type="text" id="delimiter" name="delimiter" value="\t" style="width: 80%;"><br>
+            <label for="filename">Dateiname: </label>
+            <input type="text" id="filename" name="filename" style="width: 80%;"><br>
+            <input type="submit" value="Exportieren">
+        </form>
+    </div>
+</body>
+</html>

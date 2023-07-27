@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Protein Chart</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    {% include 'nav.html' %}
+
+  <form method="POST">
+    <div class="form-group">
+      <label for="start_date">Von: </label>
+      <input type="date" id="start_date" name="start_date">
+      <label for="end_date">Bis: </label>
+      <input type="date" id="end_date" name="end_date">
+      <input type="submit" value="Filter">
+    </div>
+  </form>
+
+
+    <div class="container">
+        <h2>Protein vs. Tagesziel </h2>
+        <canvas id="proteinChart"></canvas>
+    </div>
+
+    <!-- BEGIN: New chart container -->
+    <div class="container">
+        <h2>Protein-Typen pro Tag</h2>
+        <div style="height:400px; width:100%;">
+            <canvas id="proteinTypesChart"></canvas>
+        </div>
+    </div>
+    <!-- END: New chart container -->
+    
+  
+    <!-- BEGIN: New pie chart container -->
+    <div class="container">
+        <h2>Protein-Konsum nach Typ</h2>
+        <canvas id="proteinPieChart"></canvas>
+    </div>
+    <!-- END: New pie chart container -->
+  
+    <script>
+    var ctx = document.getElementById('proteinChart').getContext('2d');
+    var proteinChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ dates|tojson }},
+            datasets: [{
+                label: 'Total Protein',
+                data: {{ total_grams|tojson }},
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true
+            },
+            {
+                type: 'line',
+                label: 'Goal',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                data: Array({{ dates|length }}).fill({{ goal }}),
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+<!-- BEGIN: New chart script -->
+var ctxTypes = document.getElementById('proteinTypesChart').getContext('2d');
+
+// Store data in JavaScript variable before using
+var totalGramsByType = {{ total_grams_by_type|tojson|safe }};
+var proteinTypesChart;
+              
+if(totalGramsByType.length > 0){
+    if (typeof proteinTypesChart !== "undefined") {
+    proteinTypesChart.destroy();
+    }
+  // Extract protein types from the first day's data. Assumes all days have the same protein types.
+  var protein_types = Object.keys(totalGramsByType[0]);
+
+  // Define colors
+  var colors = [
+      'rgba(75, 192, 192, 1)',  // cyan
+      'rgba(255, 99, 132, 1)',  // red
+      'rgba(255, 205, 86, 1)',  // yellow
+      'rgba(54, 162, 235, 1)',  // blue
+      'rgba(153, 102, 255, 1)',  // purple
+      'rgba(255, 159, 64, 1)',  // orange
+      'rgba(255, 0, 0, 1)',     // red
+      'rgba(0, 255, 0, 1)',     // lime
+      'rgba(0, 0, 255, 1)',     // blue
+      'rgba(255, 0, 255, 1)',    // magenta
+      'rgba(128, 0, 128, 1)', // Purple
+      'rgba(128, 128, 0, 1)' // Olive
+  ];
+
+var datasets = protein_types.map(function(protein_type, index) {
+    // Create a list of protein grams for this type across all days.
+    var data = totalGramsByType.map(function(grams_by_type_day) {
+        // Calculate the total protein for the day
+        var totalProteinForDay = Object.values(grams_by_type_day).reduce((a, b) => a + b, 0);
+        // Return the percentage that this type represents for the day
+        return (grams_by_type_day[protein_type] || 0) / totalProteinForDay * 100;
+    });
+
+    return {
+        label: protein_type,
+        data: data,
+        borderColor: colors[index % colors.length],
+        backgroundColor: colors[index % colors.length],
+        fill: true  // Ensure this is set to true
+    };
+});
+
+var proteinTypesChart = new Chart(ctxTypes, {
+    type: 'line',
+    data: {
+        labels: {{ dates|tojson }},
+        datasets: datasets,
+    },
+    options: {
+        maintainAspectRatio: false, // this line will let you control height via css
+        scales: {
+            x: {
+                barPercentage: 1.0,
+                categoryPercentage: 0.8
+            },
+            y: {
+                stacked: true,
+                beginAtZero: true,
+                max: 100 // Set the maximum scale to 100 for percentage
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+}
+<!-- END: New chart script -->
+
+
+    // BEGIN: New pie chart script
+    var ctxPie = document.getElementById('proteinPieChart').getContext('2d');
+    if({{ pie_labels|length }} > 0 && {{ pie_data|length }} > 0){
+      var proteinPieChart = new Chart(ctxPie, {
+          type: 'pie',
+          data: {
+              labels: {{ pie_labels|tojson }},
+              datasets: [{
+                  data: {{ pie_data|tojson }},
+                  backgroundColor: [
+                      'rgba(75, 192, 192, 1)',  // cyan
+                      'rgba(255, 99, 132, 1)',  // red
+                      'rgba(255, 205, 86, 1)',  // yellow
+                      'rgba(54, 162, 235, 1)',  // blue
+                      'rgba(153, 102, 255, 1)',  // purple
+                      'rgba(255, 159, 64, 1)',  // orange
+                      'rgba(255, 0, 0, 1)',     // red
+                      'rgba(0, 255, 0, 1)',     // lime
+                      'rgba(0, 0, 255, 1)',     // blue
+                      'rgba(255, 0, 255, 1)',    // magenta
+                      'rgba(128, 0, 128, 1)', // Purple
+                      'rgba(128, 128, 0, 1)' // Olive
+                  ],
+                  borderColor: [
+                      'rgba(75, 192, 192, 1)',  // cyan
+                      'rgba(255, 99, 132, 1)',  // red
+                      'rgba(255, 205, 86, 1)',  // yellow
+                      'rgba(54, 162, 235, 1)',  // blue
+                      'rgba(153, 102, 255, 1)',  // purple
+                      'rgba(255, 159, 64, 1)',  // orange
+                      'rgba(255, 0, 0, 1)',     // red
+                      'rgba(0, 255, 0, 1)',     // lime
+                      'rgba(0, 0, 255, 1)',     // blue
+                      'rgba(255, 0, 255, 1)',    // magenta
+                      'rgba(128, 0, 128, 1)', // Purple
+                      'rgba(128, 128, 0, 1)' // Olive
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              responsive: true,
+              plugins: {
+                  legend: {
+                      position: 'bottom'
+                  }
+              }
+          }
+      });
+    }
+    // END: New pie chart script
+          
+    </script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

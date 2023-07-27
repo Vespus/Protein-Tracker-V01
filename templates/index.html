@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Protein Tracker</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    {% include 'nav.html' %}
+
+    <div class="container">
+        <form method="POST">
+            <label for="protein_type">Protein-Art:</label>
+            <select id="protein_type" name="protein_type" onchange="checkOther(this)">
+                {% for protein_type in protein_types %}
+                <option value="{{ protein_type }}">{{ protein_type }}</option>
+                {% endfor %}
+                <option value="Other">=Neues Protein=</option>
+            </select>
+            <input type="text" id="other_protein_type" name="other_protein_type" style="display: none;" placeholder="Enter new protein type">
+            <label for="grams">Gramm:</label>
+            <input type="number" id="grams" name="grams" style="width: 50px; height: 8px;">
+            <input type="submit" value="Speichern">
+        </form>
+        <h2>Proteine am {{ datetime.strptime(current_date, '%Y-%m-%d').strftime('%d.%m.%Y') }}:</h2>
+        {% if protein_data %}
+            <p>Heute bisher insg. {{ total_grams_today }} g</p>
+            {% set difference = goal - total_grams_today %}
+            {% set rounded_difference = difference|round %}
+            {% if rounded_difference == 0 %}
+                <p style="color: green;">Punktlandung!</p>
+            {% else %}
+                <p style="color: {{ 'green' if rounded_difference < 0 else 'red' }};">{{ rounded_difference|abs }} g {{ 'über' if rounded_difference < 0 else 'unter' }} Tagesziel</p>
+            {% endif %}
+        {% else %}
+            <p>Noch keine Proteine heute!</p>
+        {% endif %}
+        
+        
+        
+        <!-- The cards -->
+        <div id="cards" style="display: none;">
+            {% if protein_data %}
+                {% for entry in protein_data %}
+                <div class="card">
+                    <div><strong>Typ:</strong> <span class="protein_type">{{ entry.protein_type }}</span></div>
+                    <div><strong>Gramm:</strong> <span class="grams">{{ entry.grams }}</span></div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Noch keine Proteine heute!</p>
+            {% endif %}
+        </div>
+        
+
+        <!-- The table -->
+        <table id="table">
+            <tr>
+                <th>Typ</th>
+                <th>Gramm</th>
+            </tr>
+            {% for entry in protein_data %}
+            <tr>
+                <td>{{ entry.protein_type }}</td>
+                <td>{{ entry.grams }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Tägliche Proteine:</h2>
+
+        <!-- The cards -->
+        <div id="cards_total" style="display: none;">
+            {% for date, total in total_grams_per_day.items() %}
+            <div class="card">
+                <div>
+                    <strong>Tag:</strong> 
+                    <a href="{{ url_for('view_protein', date=date) }}" class="date-link">
+        {{ datetime.strptime(date, '%Y-%m-%d').strftime('%d.%m.%Y') }}</a>
+                </div>
+                <div><strong>Summe (g):</strong> <span class="total">{{ total }}</span></div>
+                {% set difference = goal - total %}
+                {% set rounded_difference = difference|round %}
+                {% if rounded_difference == 0 %}
+                    <div style="color: green;"><strong>Punktlandung!</strong></div>
+                {% else %}
+                    <div style="color: {{ 'green' if rounded_difference < 0 else 'red' }};"><strong>{{ rounded_difference|abs }} g {{ 'über' if rounded_difference < 0 else 'unter' }} Tagesziel</strong></div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        
+
+        <!-- The table -->
+        <table id="table_total">
+            <tr>
+                <th>Date</th>
+                <th>Total Grams</th>
+            </tr>
+            {% for date, total in total_grams_per_day.items() %}
+            <tr>
+                <td>{{ datetime.strptime(date, '%Y-%m-%d').strftime('%d.%m.%Y') }}</td>
+                <td>{{ total }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <script>
+        function checkOther(select) {
+            var otherInput = document.getElementById("other_protein_type");
+            if (select.value == "Other") {
+                otherInput.style.display = "block";
+            } else {
+                otherInput.style.display = "none";
+            }
+        }
+
+        // Switch between table and cards based on screen width
+        function updateDisplay() {
+            var table = document.getElementById('table');
+            var cards = document.getElementById('cards');
+            var table_total = document.getElementById('table_total');
+            var cards_total = document.getElementById('cards_total');
+            if (window.innerWidth <= 600) {
+                table.style.display = 'none';
+                cards.style.display = 'block';
+                table_total.style.display = 'none';
+                cards_total.style.display = 'block';
+            } else {
+                table.style.display = 'table';
+                cards.style.display = 'none';
+                table_total.style.display = 'table';
+                cards_total.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('resize', updateDisplay);
+        updateDisplay();  // Run once on page load
+    </script>
+  
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

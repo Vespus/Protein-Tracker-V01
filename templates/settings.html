@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Einstellungen</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  {% include 'nav.html' %}
+  
+  <div class="container">
+    <h2>Einstellungen</h2>
+    <div class="card">
+        <h3>Tagesziel</h3>
+        <form method="POST">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="weight" style="width: 50%;">Gewicht (in kg):</label>
+                <input type="number" id="weight" name="weight" step="0.1" required style="width: 60px; height: 10px;">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label for="multiplier" style="width: 50%;">Multiplikator:</label>
+                <input type="number" id="multiplier" name="multiplier" step="0.1" required style="width: 60px; height: 10px;">
+            </div>
+            <input type="submit" value="Speichern">
+        </form>
+        <h3>Dein Tagesziel: {{ goal if goal else 'Nicht festgelegt' }} g Protein</h3>
+    </div>
+
+<!-- Data backup section -->
+<div class="card">
+    <h3>Datensicherung</h3>
+    <form method="POST" action="/backup">
+        <input type="submit" value="Backup">
+    </form>
+    <form method="POST" action="/restore">
+        <label for="backup">Ein Backup auswählen:</label>
+        <select id="backup" name="backup">
+            <!-- Option values should be the names of backup files -->
+            {% for backup in backup_files %}
+            <option value="{{ backup }}">{{ backup }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Restore">
+    </form>
+</div>
+
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Protein - Historie</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    {% include 'nav.html' %}
+    <div class="container" style="height: 500px;">
+        <h1>Protein-Historie</h1>
+        <form method="POST">
+            <label for="date">Welcher Tag? </label>
+            <input type="date" id="date" name="date" required>
+            <input type="submit" value="Suche">
+        </form>
+{% if protein_data %}
+<h2>Proteine am {{ datetime.strptime(date, '%Y-%m-%d').strftime('%d.%m.%Y') }}</h2>
+<p>Summe in Gramm: {{ total_grams }}</p>
+{% set difference = goal - total_grams %}
+{% set rounded_difference = difference|round %}
+{% if rounded_difference == 0 %}
+    <p style="color: green;">Protein-Punktlandung. Bravo!</p>
+{% else %}
+    <p style="color: {{ 'green' if rounded_difference < 0 else 'red' }};">{{ rounded_difference|abs }} g {{ 'über' if rounded_difference < 0 else 'unter' }} Tagesziel</p>
+{% endif %}
+
+<canvas id="myChart"></canvas>
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{ protein_type_grams.keys()|list|tojson }},
+            datasets: [{
+                data: {{ protein_type_grams.values()|list|tojson }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+<div id="cards" style="display: none;">
+    {% for entry in protein_data %}
+    <div class="card">
+        <div><strong>Typ:</strong> <span class="protein_type">{{ entry.protein_type }}</span></div>
+        <div><strong>Gramm:</strong> <span class="grams">{{ entry.grams }}</span></div>
+        <div><button class="edit-btn">Ändern</button></div>
+        <form class="edit-form" method="POST" style="display: none;">
+            <input type="hidden" name="edit" value="true">
+            <input type="hidden" name="old_date" value="{{ entry.date }}">
+            <input type="hidden" name="old_protein_type" value="{{ entry.protein_type }}">
+            <input type="text" name="new_date" value="{{ entry.date }}">
+            <input type="text" name="new_protein_type" value="{{ entry.protein_type }}">
+            <input type="number" name="new_grams" value="{{ entry.grams }}">
+            <input type="submit" value="Speichern">
+        </form>
+    </div>
+    {% endfor %}
+</div>
+<table>
+    <tr>
+        <th>Type</th>
+        <th>Grams</th>
+        <th>Action</th>
+    </tr>
+    {% for entry in protein_data %}
+    <tr>
+        <td class="display">{{ entry.protein_type }}</td>
+        <td class="display">{{ entry.grams }}</td>
+        <td>
+            <button class="edit-btn">Edit</button>
+            <form class="edit-form" method="POST" style="display: none;">
+                <input type="hidden" name="edit" value="true">
+                <input type="hidden" name="old_date" value="{{ entry.date }}">
+                <input type="hidden" name="old_protein_type" value="{{ entry.protein_type }}">
+                <input type="text" name="new_date" value="{{ entry.date }}">
+                <input type="text" name="new_protein_type" value="{{ entry.protein_type }}">
+                <input type="number" name="new_grams" value="{{ entry.grams }}">
+                <input type="submit" value="Speichern">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+    </div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    document.querySelectorAll('.edit-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var tr = this.parentNode.parentNode;
+            tr.querySelector('.edit-form').style.display = 'block';
+            tr.querySelectorAll('.display').forEach(function(td) {
+                td.style.display = 'none';
+            });
+            this.style.display = 'none';
+        });
+    });
+
+    // Switch between table and cards based on screen width
+    function updateDisplay() {
+        var table = document.querySelector('table');
+        var cards = document.getElementById('cards');
+        if (window.innerWidth <= 600) {
+            table.style.display = 'none';
+            cards.style.display = 'block';
+        } else {
+            table.style.display = 'table';
+            cards.style.display = 'none';
+        }
+    }
+
+    window.addEventListener('resize', updateDisplay);
+    updateDisplay();  // Run once on page load
+</script>
+
+</body>
+</html>
