@@ -71,10 +71,11 @@ def index():
 def chart():
     protein_data = load_data("protein_data.txt")
 
-    # Set the default start date to 7 days ago
-    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-    start_date = seven_days_ago
-    end_date = None
+    # Set the default start date to 7 days ago and exclude today
+    eight_days_ago = (datetime.now() - timedelta(days=8)).strftime('%Y-%m-%d')
+    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    start_date = eight_days_ago
+    end_date = yesterday
 
     if request.method == 'POST':
         start_date = request.form.get('start_date') or start_date
@@ -126,8 +127,27 @@ def chart():
     pie_labels = list(total_grams_by_type_overall.keys())
     pie_data = list(total_grams_by_type_overall.values())
 
-    return render_template('chart.html', dates=dates, total_grams=total_grams, total_grams_by_type=total_grams_by_type, goal=goal, pie_labels=pie_labels, pie_data=pie_data)
+    # Compute average consumption
+    if dates:
+        total_days = len(dates)
+        total_consumption = sum(total_grams)
+        average_consumption = round(total_consumption / total_days)
+    else:
+        average_consumption = 0
 
+
+    # Calculate consumption_diff
+    consumption_diff = average_consumption - goal
+
+    # Format start and end dates to German date format (dd.mm.yy)
+    start_date_formatted = datetime.strptime(start_date, '%Y-%m-%d').strftime('%d.%m.%y')
+    end_date_formatted = datetime.strptime(end_date, '%Y-%m-%d').strftime('%d.%m.%y')
+    date_range = "Vom {} bis {}:".format(start_date_formatted, end_date_formatted)
+
+    return render_template('chart.html', dates=dates, total_grams=total_grams, total_grams_by_type=total_grams_by_type, goal=goal, pie_labels=pie_labels, pie_data=pie_data, average_consumption=average_consumption, date_range=date_range, consumption_diff=consumption_diff)
+
+
+  
 
 ###########
 # SETTINGS
@@ -135,6 +155,8 @@ def chart():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+
+    
     if request.method == 'POST':
         weight = request.form.get('weight')
         multiplier = request.form.get('multiplier')

@@ -25,6 +25,23 @@
         <canvas id="proteinChart"></canvas>
     </div>
 
+<div class="container">
+    <div class="card">
+        <h4>{{ date_range }}</h4>
+        <p>Durchschnitts-Konsum: {{ average_consumption }} g / Tag<br>
+        Ziel-Konsum: {{ goal }} g / Tag</p>
+        {% if consumption_diff > 0 %}
+        <p style="color: green;">Um {{ consumption_diff }} g / Tag über dem Ziel</p>
+        {% elif consumption_diff == 0 %}
+        <p style="color: green;">Eine exakte Punktlandung!</p>
+        {% else %}
+        <p style="color: red;">Um {{ -consumption_diff }} g / Tag unter dem Ziel!</p>
+        {% endif %}
+    </div>
+</div>
+
+
+
     <!-- BEGIN: New chart container -->
     <div class="container">
         <h2>Protein-Typen pro Tag</h2>
@@ -67,7 +84,7 @@
             responsive: true,
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: false
                 }
             }
         }
