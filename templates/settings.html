@@ -1,51 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Page title -->
     <title>Einstellungen</title>
+
+    <!-- CSS files -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- Meta tag for responsive design -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-  {% include 'nav.html' %}
+    <!-- Navigation bar -->
+    {% include 'nav.html' %}
   
-  <div class="container">
-    <h2>Einstellungen</h2>
-    <div class="card">
-        <h3>Tagesziel</h3>
-        <form method="POST">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="weight" style="width: 50%;">Gewicht (in kg):</label>
-                <input type="number" id="weight" name="weight" step="0.1" required style="width: 60px; height: 10px;">
+    <div class="container mt-3">
+        <h2>Einstellungen</h2>
+
+        <!-- Tab links -->
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#goal">Ziele</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#backup">Backup</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#protein">Proteine</a>
+            </li>
+        </ul>
+
+        <!-- Tab content -->
+        <div class="tab-content">
+            <!-- Goal tab -->
+            <div id="goal" class="container tab-pane active">
+                <br>
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card">
+                            <h3>Tagesziel</h3>
+                            <!-- Goal form -->
+                            <form method="POST">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <label for="weight" style="width: 50%;">Gewicht (in kg):</label>
+                                    <input type="number" id="weight" name="weight" step="0.1" required style="width: 60px; height: 10px;">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <label for="multiplier" style="width: 50%;">Multiplikator:</label>
+                                    <input type="number" id="multiplier" name="multiplier" step="0.1" required style="width: 60px; height: 10px;">
+                                </div>
+                                <input type="submit" value="Speichern" class="custom-btn">
+                            </form>
+                            <h5>Dein Tagesziel: {{ goal if goal else 'Nicht festgelegt' }} g Protein</h5>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="multiplier" style="width: 50%;">Multiplikator:</label>
-                <input type="number" id="multiplier" name="multiplier" step="0.1" required style="width: 60px; height: 10px;">
+
+            <!-- Backup tab -->
+            <div id="backup" class="container tab-pane fade">
+                <br>
+                <div class="card">
+                    <h3>Datensicherung</h3>
+                    <!-- Backup form -->
+                    <form method="POST" action="/backup">
+                        <input type="submit" value="Backup" class="custom-btn"">
+                    </form>
+                    <!-- Restore form -->
+                    <form method="POST" action="/restore">
+                        <label for="backup">Ein Backup auswählen:</label>
+                        <select id="backup" name="backup">
+                            <!-- Option values should be the names of backup files -->
+                            {% for backup in backup_files %}
+                            <option value="{{ backup }}">{{ backup }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="submit" value="Restore" class="custom-btn">
+                    </form>
+                </div>
             </div>
-            <input type="submit" value="Speichern">
-        </form>
-        <h3>Dein Tagesziel: {{ goal if goal else 'Nicht festgelegt' }} g Protein</h3>
+
+            <!-- Protein tab -->
+            <div id="protein" class="container tab-pane fade">
+                <br>
+                <div class="card">
+                    <h3>Proteinarten</h3>
+                    <!-- Add protein form -->
+                    <form method="POST" action="/add_protein_type">
+                        <label for="new_protein_type">Neue Proteinart:</label>
+                        <input type="text" id="new_protein_type" name="new_protein_type" step="0.1" required style="width: 160px; height: 10px;">
+                        <input type="submit" value="Hinzufügen" class="custom-btn">
+                    </form>
+                    <!-- List of protein types -->
+                    <ul style="list-style-type: none; padding: 0;">
+                        {% for protein_type in protein_types %}
+                        <li style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>{{ protein_type }}</span>
+                            <!-- Delete protein form -->
+                            <form method="POST" action="/delete_protein_type" style="margin: 0;">
+                                <input type="hidden" name="protein_type" value="{{ protein_type }}">
+                                <input type="submit" value="Löschen" class="custom-btn" style="margin-left: 10px;" onclick="return confirm('Wirklich löschen?');">
+                            </form>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
-<!-- Data backup section -->
-<div class="card">
-    <h3>Datensicherung</h3>
-    <form method="POST" action="/backup">
-        <input type="submit" value="Backup">
-    </form>
-    <form method="POST" action="/restore">
-        <label for="backup">Ein Backup auswählen:</label>
-        <select id="backup" name="backup">
-            <!-- Option values should be the names of backup files -->
-            {% for backup in backup_files %}
-            <option value="{{ backup }}">{{ backup }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Restore">
-    </form>
-</div>
-
-
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
-
+    <!-- JavaScript files -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

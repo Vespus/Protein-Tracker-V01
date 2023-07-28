@@ -38,6 +38,7 @@ nav h2 {
     max-height: 0;
     overflow: hidden;
     width: 100%;
+    z-index: 9999;  
 }
 
 .container {
@@ -65,14 +66,6 @@ form select {
     margin-bottom: 10px;
     border-radius: 4px;
     border: 1px solid #ddd;
-}
-
-form input[type="submit"] {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 10px 20px;
 }
 
 form input[type="submit"]:hover {
@@ -188,5 +181,15 @@ tr:nth-child(even) {
     #proteinTypesChart {
         height: 500px; /* Adjust this to your preference */
     }
-
+        
+    input.custom-btn {
+        background-color: #5cb85c !important;
+        color: white !important;
+        border: none !important;
+        cursor: pointer !important;
+        padding: 0 10px !important; /* Changed vertical padding to 0 */
+        font-size: 14px !important;
+        height: 25px !important;
+        line-height: 25px !important; /* line-height equal to height helps center text */
+    }   
 }

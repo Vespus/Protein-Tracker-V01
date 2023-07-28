@@ -173,7 +173,10 @@ def settings():
     # Get a list of backup files
     backup_files = glob.glob("backup/protein_data_*.txt")
   
-    return render_template('settings.html', goal=goal, backup_files=backup_files)
+    # Load protein types
+    protein_types = load_data('protein_types.txt')
+  
+    return render_template('settings.html', goal=goal, backup_files=backup_files, protein_types=protein_types)
 
 
 ###########
@@ -304,6 +307,34 @@ def restore():
     except Exception as e:
         return "Error occurred while restoring backup: " + str(e)
 
+
+################################
+# ADD/EDIT/DELETE PROTEIN TYPES
+################################
+
+@app.route('/add_protein_type', methods=['POST'])
+def add_protein_type():
+    new_protein_type = request.form.get('new_protein_type')
+    protein_types = load_data('protein_types.txt')
+    if new_protein_type not in protein_types:
+        protein_types.append(new_protein_type)
+        save_data(protein_types, 'protein_types.txt')
+    return redirect(url_for('settings'))
+
+@app.route('/edit_protein_type', methods=['POST'])
+def edit_protein_type():
+    # The protein type to edit will be passed in the request form.
+    # You could display a form for the user to enter the new name, then save the new name in the same position in the list.
+    pass
+
+@app.route('/delete_protein_type', methods=['POST'])
+def delete_protein_type():
+    protein_type_to_delete = request.form.get('protein_type')
+    protein_types = load_data('protein_types.txt')
+    if protein_type_to_delete in protein_types:
+        protein_types.remove(protein_type_to_delete)
+        save_data(protein_types, 'protein_types.txt')
+    return redirect(url_for('settings'))
 
 
 if __name__ == '__main__':

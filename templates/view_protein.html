@@ -13,7 +13,7 @@
         <form method="POST">
             <label for="date">Welcher Tag? </label>
             <input type="date" id="date" name="date" required>
-            <input type="submit" value="Suche">
+            <input type="submit" value="Suche" class="custom-btn">
         </form>
 {% if protein_data %}
 <h2>Proteine am {{ datetime.strptime(date, '%Y-%m-%d').strftime('%d.%m.%Y') }}</h2>
@@ -73,7 +73,7 @@
             <input type="text" name="new_date" value="{{ entry.date }}">
             <input type="text" name="new_protein_type" value="{{ entry.protein_type }}">
             <input type="number" name="new_grams" value="{{ entry.grams }}">
-            <input type="submit" value="Speichern">
+            <input type="submit" value="Speichern" class="custom-btn">
         </form>
     </div>
     {% endfor %}
@@ -97,7 +97,7 @@
                 <input type="text" name="new_date" value="{{ entry.date }}">
                 <input type="text" name="new_protein_type" value="{{ entry.protein_type }}">
                 <input type="number" name="new_grams" value="{{ entry.grams }}">
-                <input type="submit" value="Speichern">
+                <input type="submit" value="Speichern" class="custom-btn">
             </form>
         </td>
     </tr>

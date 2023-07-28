@@ -20,7 +20,7 @@
             <input type="text" id="other_protein_type" name="other_protein_type" style="display: none;" placeholder="Enter new protein type">
             <label for="grams">Gramm:</label>
             <input type="number" id="grams" name="grams" style="width: 50px; height: 8px;">
-            <input type="submit" value="Speichern">
+            <input type="submit" value="Speichern" class="custom-btn">
         </form>
         <h2>Proteine am {{ datetime.strptime(current_date, '%Y-%m-%d').strftime('%d.%m.%Y') }}:</h2>
         {% if protein_data %}
